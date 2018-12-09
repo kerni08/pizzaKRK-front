@@ -1,0 +1,75 @@
+
+
+<div class="section-colored text-center">
+    <div class="searchBar"  ng-controller="InstantSearchController">
+        <div class="bar">
+            <input type="text" ng-model="searchString" placeholder="Wpisz adres pocztowy np. 30-069" />
+        </div>
+<div class="pizzeriaList">
+        <ul>
+
+            <li ng-repeat="i in items | searchFor:searchString">
+                <div class = "pizzeriaBox"  >
+                    <img ng-src="{{i.image}}" /></a>
+                    <p>{{i.title}}</p>
+                    <p>Ocena: {{i.score}}</p>
+                    <p><i>{{i.description}}</i></p>
+                    <a href={{i.url}}><button class="btn">Menu</button></href></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+        <!-- /.container -->
+    </div>
+</div>
+<!-- /.section-colored -->
+
+<div class="section">
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>Polecamy!</h2>
+                <hr>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <a href="https://pyszne.pl">
+                    <img class="img-responsive img-home-portfolio" src="http://placehold.it/700x450">
+                </a>
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+</div>
+<!-- /.section -->
+
+
