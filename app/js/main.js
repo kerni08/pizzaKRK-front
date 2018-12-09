@@ -17,7 +17,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/p/:id", {templateUrl: "partials/pizzeria.html", controller: "PageCtrl"})
         .when("/p/:id/:pid", {templateUrl: "partials/addPizza.html", controller: "PageCtrl"})
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "PageCtrl"})
-        .when("/?text=:zipCode", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
+        .when("/pizzeriaList/:zipCode", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -42,7 +42,7 @@ app.controller('zipCodeController', ['$scope', $location, function($scope, $loca
             $scope.zipCode.push(this.text);
             $scope.text = '';
         }
-        $location.path('/cart');
+        $location.path('/pizzeriaList/'+$scope.text);
     }
 
 }]);
