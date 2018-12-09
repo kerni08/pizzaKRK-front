@@ -1,7 +1,7 @@
 /**
  * Main AngularJS Web Application
  */
-var app = angular.module('pizzaPortalApp', ['ngRoute', 'ui.bootstrap']);
+var app = angular.module('pizzaPortalApp', ['ngRoute']);
 
 /**
  * Configure the Routes
@@ -13,9 +13,11 @@ app.config(['$routeProvider', function ($routeProvider) {
         // Pages
         .when("/about", {templateUrl: "partials/about.html", controller: "PageCtrl"})
         .when("/contact", {templateUrl: "partials/contact.html", controller: "PageCtrl"})
+        .when("/pizzeriaList", {templateUrl: "partials/pizzeriaList.html", controller: "PageCtr"})
         .when("/p/:id", {templateUrl: "partials/pizzeria.html", controller: "PageCtrl"})
         .when("/p/:id/:pid", {templateUrl: "partials/addPizza.html", controller: "PageCtrl"})
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "PageCtrl"})
+        .when("/?text=:zipCode", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -32,33 +34,22 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
     })
 });
 
-
-app.filter('searchFor', function () {
-
-
-    return function (arr, searchString) {
-
-        if (!searchString) {
-            return arr;
+app.controller('zipCodeController', ['$scope', $location, function($scope, $location) {
+    $scope.zipCode = '';
+    $scope.text = 'Wpisz adres pocztowy np. 30-069';
+    $scope.submit = function () {
+        if ($scope.text) {
+            $scope.zipCode.push(this.text);
+            $scope.text = '';
         }
+        $location.path('/cart');
+    }
 
-        var result = [];
+}]);
 
-        searchString = searchString.toLowerCase();
-
-
-        angular.forEach(arr, function (item) {
-
-            if (item.kod.toLowerCase().indexOf(searchString) !== -1) {
-                result.push(item);
-            }
-
-        });
-
-        return result;
-    };
-
-});
+app.controller('PizzeriaListCtrl', function($scope){
+    $scope.zipCode = $routeProvider.zipCode;
+})
 
 // The controller
 

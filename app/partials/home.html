@@ -1,26 +1,14 @@
-
-
 <div class="section-colored text-center">
-    <div class="searchBar"  ng-controller="InstantSearchController">
-        <div class="bar">
-            <input type="text" ng-model="searchString" placeholder="Wpisz adres pocztowy np. 30-069" />
-        </div>
-<div class="pizzeriaList">
-        <ul>
 
-            <li ng-repeat="i in items | searchFor:searchString">
-                <div class = "pizzeriaBox"  >
-                    <img ng-src="{{i.image}}" /></a>
-                    <p>{{i.title}}</p>
-                    <p>Ocena: {{i.score}}</p>
-                    <p><i>{{i.description}}</i></p>
-                    <a href={{i.url}}><button class="btn">Menu</button></href></a>
-                </div>
-            </li>
-        </ul>
+    <div class="bar">
+        <form ng-submit=submit() ng-controller="zipCodeController">
+            <p><b>Wpisz kod pocztowy np. 30-069</b></p>
+            <input type="text" ng-model="text" name="text"/>
+        </form>
     </div>
-        <!-- /.container -->
-    </div>
+
+    <!-- /.container -->
+</div>
 </div>
 <!-- /.section-colored -->
 
