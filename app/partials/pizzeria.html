@@ -4,12 +4,13 @@
 <br/>
 
 <br/>
-<div class="searchBar" ng-controller="InstantCartController">
+<div class="searchBar" ng-controller="PizzeriaCtrl">
     <li ng-repeat="i in items">
         <div class="pizzeriaBox">
             <p>{{i.name}} </p>
             <p>{{i.data}}</p>
             <p>{{i.price}}</p>
+            <button class="btn" ng-click="addToCart(i.id)">Dodaj do koszyka</button>
         </div>
     </li>
 </div>

@@ -1,3 +1,25 @@
+
+<body class="container">
 <div controller = "PizzeriaListController">
-    {{zipCode}};
+
+
+    <h1>Pizzerie dostarczajace dla kodu: {{zipCode}}</h1>
+    <br/>
+
+    <div class="pizzeriaList">
+        <ul>
+
+            <li ng-repeat="i in items">
+                <div class = "pizzeriaBox"  >
+                    <img ng-src="{{i.image}}" /></a>
+                    <p>{{i.title}}</p>
+                    <p>Ocena: {{i.score}}</p>
+                    <p><i>{{i.description}}</i></p>
+                    <button class="btn" ng-click="redirect(i.url)">Menu</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </div>
 </div>
+</body>
