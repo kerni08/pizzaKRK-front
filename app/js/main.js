@@ -1,6 +1,7 @@
 /**
  * Main AngularJS Web Application
  */
+
 var app = angular.module('pizzaPortalApp', ['ngRoute']);
 
 /**
@@ -36,7 +37,7 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
 
 app.service('zipCodeService', function () {
     zipCode = '';
-    return {zipCode};
+    return {zipCode };
 });
 app.service('pizzeriaUrlService', function () {
     pizzeriaUrl = '';
@@ -45,6 +46,7 @@ app.service('pizzeriaUrlService', function () {
 app.service('cartService', function () {
     return {cart: []};
 });
+
 
 app.controller('zipCodeController', ['$scope', '$location', 'zipCodeService', function ($scope, $location, zipCodeService) {
     $scope.text = '';
@@ -95,29 +97,85 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', 'zipCodeService', 'pi
 }]);
 
 app.controller('PizzeriaCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', function ($scope, cartService, pizzeriaUrlService) {
-    $scope.name = pizzeriaUrlService.pizzeriaUrl;
+    $scope.url = pizzeriaUrlService.pizzeriaUrl;
     $scope.items = [
-        {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00},
-        {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00},
-        {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00},
+        {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00, quantity: 0},
+        {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00, quantity: 0},
+        {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00, quantity: 0}
     ];
-    $scope.addToCart = function(id) {
-        cartService.cart.push(id);
+    $scope.setup = {
+        min: 0,
+        max: 10,
+    };
+
+
+    $scope.increase = function (i) {
+        if (i.quantity < $scope.setup.max)
+            i.quantity++;
     }
 
+    $scope.decrease = function (i) {
+        if (i.quantity > $scope.setup.min)
+        i.quantity--;
+    }
+
+    $scope.addToCart = function (pid, pname, pprice, qty) {
+        cartService.cart.push({id: pid, name: pname, price: pprice, quantity: qty});
+    }
+
+
 }]);
 
-app.controller('CartCtrl', ['$scope', 'cartService', function ($scope, cartService) {
+
+
+
+
+
+app.controller('CartCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', '$location', function ($scope, cartService, pizzeriaUrlService, $location) {
     $scope.cart = cartService.cart;
+    $scope.url = pizzeriaUrlService.pizzeriaUrl;
+    $scope.setup = {
+        min: 0,
+        max: 10,
+    };
 
+    $scope.getCost = function(item) {
+        return item.quantity * item.price;
+    };
 
+    $scope.getTotal = function() {
+        var total =  _.reduce($scope.cart, function(sum, item) {
+            return sum + $scope.getCost(item);
+        }, 0);
+        console.log('total: ' + total);
+        return total;
+    };
+
+    $scope.increase = function (i) {
+        if (i.quantity < $scope.setup.max)
+            i.quantity++;
+    }
+
+    $scope.decrease = function (i) {
+        if (i.quantity > $scope.setup.min)
+            i.quantity--;
+    }
+
+    $scope.removeFromCart = function (item) {
+        var index = $scope.cart.indexOf(item);
+        $scope.cart.splice(index, 1);
+        console.log($scope.cart);
+    }
+
+    $scope.clearCart = function() {
+        $scope.cart.length = 0;
+    };
+
+    $scope.backToPizzeriaPage = function() {
+        pizzeriaUrlService.pizzeriaUrl = $scope.url;
+        $location.path('/p/' + $scope.url);
+    }
 }]);
-
-
-
-
-
-
 
 
 

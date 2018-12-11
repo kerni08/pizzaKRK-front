@@ -1,6 +1,6 @@
 <body class="container">"
 
-<h1>Menu:</h1>
+<h1>Menu: {{url}}</h1>
 <br/>
 
 <br/>
@@ -10,7 +10,11 @@
             <p>{{i.name}} </p>
             <p>{{i.data}}</p>
             <p>{{i.price}}</p>
-            <button class="btn" ng-click="addToCart(i.id)">Dodaj do koszyka</button>
+
+            <button class="btn" ng-click="decrease(i)">-</button>
+           {{i.quantity}}
+            <button class="btn" ng-click="increase(i)">+</button>
+            <button class="btn" ng-click="addToCart(i.id, i.name, i.price, i.quantity)">Dodaj do koszyka</button>
         </div>
     </li>
 </div>

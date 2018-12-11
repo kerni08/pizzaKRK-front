@@ -1,3 +1,15 @@
 <div>
     {{cart}}
+
+    <li ng-repeat="i in cart">
+        <div class="pizzeriaBox">
+            <span>{{ i.quantity + ' x ' + i.name + ' = ' + (getCost(i) | currency:'') }} zł</span>
+            <button class="btn" ng-click="decrease(i)">-</button>
+            <button class="btn" ng-click="increase(i)">+</button>
+            <button class="btn" ng-click="removeFromCart(i)">Usuń</button>
+        </div>
+    </li>
+    {{getTotal() | currency:''}} zł
+    <button class="btn" ng-click="clearCart()">Wyczyść koszyk</button>
+    <button class="btn" ng-click="backToPizzeriaPage()">Wróc na stronę pizzeri</button>
 </div>
