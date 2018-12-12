@@ -5,7 +5,7 @@
 
 paypal.Button.driver('angular', window.angular);
 
-var app = angular.module('pizzaPortalApp', ['ngRoute', 'paypal-button']);
+var app = angular.module('pizzaKrakowApp', ['ngRoute', 'paypal-button']);
 
 
 /**

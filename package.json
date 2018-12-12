@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "Frontend for PizzaPortal",
-  "repository": "https://github.com/heartistizio/pizzaPortal-front",
+  "repository": "https://github.com/heartistizio/pizzaKRK-front",
   "license": "MIT",
   "dependencies": {
     "angular": "^1.7.5",
