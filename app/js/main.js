@@ -18,7 +18,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         // Pages
         .when("/about", {templateUrl: "partials/about.html", controller: "PageCtrl"})
         .when("/contact", {templateUrl: "partials/contact.html", controller: "PageCtrl"})
-        .when("/pizzeriaList", {templateUrl: "partials/pizzeriaList.html", controller: "PageCtr"})
+
         .when("/p/:id", {templateUrl: "partials/pizzeria.html", controller: "PizzeriaCtrl"})
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "CartCtrl"})
         .when("/pizzeriaList", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
@@ -41,9 +41,11 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
 });
 
 app.service('zipCodeService', function () {
+    var zipCode = '';
     return zipCode;
 });
 app.service('pizzeriaUrlService', function () {
+    var pizzeriaUrl =  '';
     return pizzeriaUrl;
 });
 app.service('cartService', function () {
@@ -51,6 +53,7 @@ app.service('cartService', function () {
 });
 
 app.service('orderTotalPriceService', function () {
+    var total = '';
     return total;
 });
 
