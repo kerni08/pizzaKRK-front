@@ -1,20 +1,16 @@
 <div ng-controller="OrderCtrl">
     <form novalidate class="orderForm">
-        <label>Adres: <input type="text" ng-model="user.adres" /></label><br />
-        <label>Numer mieszkania: <input type="text" ng-model="user.appartmentNumber" /></label><br />
-        <label>Imię i nazwisko: <input type="text" ng-model="user.name" /></label><br />
-        <label>Numer telefonu: <input type="text" ng-model="user.phoneNumber" /></label><br />
-        <label>E-mail: <input type="email" ng-model="user.email" /></label><br />
+        <label>Adres: <input type="text" ng-model="user.adres"/></label><br/>
+        <label>Numer mieszkania: <input type="text" ng-model="user.appartmentNumber"/></label><br/>
+        <label>Imię i nazwisko: <input type="text" ng-model="user.name"/></label><br/>
+        <label>Numer telefonu: <input type="text" ng-model="user.phoneNumber"/></label><br/>
+        <label>E-mail: <input type="email" ng-model="user.email"/></label><br/>
 
-        <input type="submit" ng-click="update(user)" value="Save" />
+        <input type="submit" ng-click="update(user)" value="Save"/>
     </form>
     <pre>user = {{user | json}}</pre>
     <pre>master = {{master | json}}</pre>
 
-    <paypal-button
-            client="opts.client"
-            payment="opts.payment"
-            commit="opts.commit"
-            on-authorize="opts.onAuthorize">
-    </paypal-button>
+    <paypal-button env="opts.env" client="opts.client" payment="opts.payment" commit="opts.commit"
+                   on-authorize="opts.onAuthorize"></paypal-button>
 </div>

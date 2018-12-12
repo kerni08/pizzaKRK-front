@@ -53,7 +53,7 @@ app.service('cartService', function () {
 });
 
 app.service('orderTotalPriceService', function () {
-    var total = 0;
+    var total = 0.00;
     return total;
 });
 
@@ -192,28 +192,29 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
 
 app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
     $scope.url = pizzeriaUrlService.url;
+    console.log(orderTotalPriceService.total);
     $scope.opts = {
         env: 'sandbox',
         client: {
-            sandbox:    'AcC_M-9lCUofkzdLyffgu-dboRIKk97zEf4_jflXTthNf6KWPXxJmtT3f3J1ZUMoKfCzerA8F2ms3Jy3',
-            production: '<insert prod uction client id>'
+            sandbox: 'AcC_M-9lCUofkzdLyffgu-dboRIKk97zEf4_jflXTthNf6KWPXxJmtT3f3J1ZUMoKfCzerA8F2ms3Jy3',
+            production: '<insert production client id>'
         },
-        payment: function() {
-            var env    = this.props.env;
-            var client = this.props.client;
+        payment: function () {
+            var env = $scope.opts.env;
+            var client = $scope.opts.client;
             return paypal.rest.payment.create(env, client, {
                 transactions: [
                     {
-                        amount: { total: orderTotalPriceService, currency: 'PLN' }
+                        amount: {total: orderTotalPriceService.total, currency: 'PLN'}
                     }
                 ]
             });
         },
         commit: true, // Optional: show a 'Pay Now' button in the checkout flow
-        onAuthorize: function(data, actions) {
-
-            return actions.payment.execute().then(function() {
-                $location.path('/paymentAuthorized')
+        onAuthorize: function (data, actions) {
+            // Optional: display a confirmation page here
+            return actions.payment.execute().then(function () {
+                console.log('Success!');
             });
         }
     };
