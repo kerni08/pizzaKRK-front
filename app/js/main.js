@@ -2,7 +2,11 @@
  * Main AngularJS Web Application
  */
 
-var app = angular.module('pizzaPortalApp', ['ngRoute']);
+
+paypal.Button.driver('angular', window.angular);
+
+var app = angular.module('pizzaPortalApp', ['ngRoute', 'paypal-button']);
+
 
 /**
  * Configure the Routes
@@ -16,9 +20,10 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/contact", {templateUrl: "partials/contact.html", controller: "PageCtrl"})
         .when("/pizzeriaList", {templateUrl: "partials/pizzeriaList.html", controller: "PageCtr"})
         .when("/p/:id", {templateUrl: "partials/pizzeria.html", controller: "PizzeriaCtrl"})
-        .when("/p/:id/:pid", {templateUrl: "partials/addPizza.html", controller: "PageCtrl"})
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "CartCtrl"})
         .when("/pizzeriaList", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
+        .when("/order", {templateUrl: "/partials/order.html", controller: "OrderCtrl"})
+        .when("/paymentAuthorized", {templateUrl: "partials/authorized.html", controller: "PageCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -36,15 +41,20 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
 });
 
 app.service('zipCodeService', function () {
-    zipCode = '';
-    return {zipCode };
+    var zipCode = '';
+    return zipCode;
 });
 app.service('pizzeriaUrlService', function () {
-    pizzeriaUrl = '';
-    return {pizzeriaName: pizzeriaUrl};
+    var pizzeriaUrl = '';
+    return pizzeriaUrl;
 });
 app.service('cartService', function () {
     return {cart: []};
+});
+
+app.service('orderTotalPriceService', function () {
+    var total = 0;
+    return total;
 });
 
 
@@ -105,46 +115,42 @@ app.controller('PizzeriaCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', f
     ];
     $scope.setup = {
         min: 0,
-        max: 10,
+        max: 10
     };
 
 
     $scope.increase = function (i) {
         if (i.quantity < $scope.setup.max)
             i.quantity++;
-    }
+    };
 
     $scope.decrease = function (i) {
         if (i.quantity > $scope.setup.min)
-        i.quantity--;
-    }
+            i.quantity--;
+    };
 
     $scope.addToCart = function (pid, pname, pprice, qty) {
         cartService.cart.push({id: pid, name: pname, price: pprice, quantity: qty});
-    }
+    };
 
 
 }]);
 
 
-
-
-
-
-app.controller('CartCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', '$location', function ($scope, cartService, pizzeriaUrlService, $location) {
+app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
     $scope.cart = cartService.cart;
     $scope.url = pizzeriaUrlService.pizzeriaUrl;
     $scope.setup = {
         min: 0,
-        max: 10,
+        max: 10
     };
 
-    $scope.getCost = function(item) {
+    $scope.getCost = function (item) {
         return item.quantity * item.price;
     };
 
-    $scope.getTotal = function() {
-        var total =  _.reduce($scope.cart, function(sum, item) {
+    $scope.getTotal = function () {
+        var total = _.reduce($scope.cart, function (sum, item) {
             return sum + $scope.getCost(item);
         }, 0);
         console.log('total: ' + total);
@@ -154,29 +160,70 @@ app.controller('CartCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', '$loc
     $scope.increase = function (i) {
         if (i.quantity < $scope.setup.max)
             i.quantity++;
-    }
+    };
 
     $scope.decrease = function (i) {
         if (i.quantity > $scope.setup.min)
             i.quantity--;
-    }
+    };
 
     $scope.removeFromCart = function (item) {
         var index = $scope.cart.indexOf(item);
         $scope.cart.splice(index, 1);
         console.log($scope.cart);
-    }
+    };
 
-    $scope.clearCart = function() {
+    $scope.clearCart = function () {
         $scope.cart.length = 0;
     };
 
-    $scope.backToPizzeriaPage = function() {
+    $scope.backToPizzeriaPage = function () {
         pizzeriaUrlService.pizzeriaUrl = $scope.url;
+        cartService.cart = $scope.cart;
         $location.path('/p/' + $scope.url);
-    }
+    };
+
+    $scope.sendOrder = function () {
+        cartService.cart = $scope.cart;
+        orderTotalPriceService.total = $scope.getTotal();
+        $location.path('/order');
+    };
 }]);
 
+app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
+    $scope.url = pizzeriaUrlService.url;
+    $scope.opts = {
+        env: 'sandbox',
+        client: {
+            sandbox:    'AcC_M-9lCUofkzdLyffgu-dboRIKk97zEf4_jflXTthNf6KWPXxJmtT3f3J1ZUMoKfCzerA8F2ms3Jy3',
+            production: '<insert prod uction client id>'
+        },
+        payment: function() {
+            var env    = this.props.env;
+            var client = this.props.client;
+            return paypal.rest.payment.create(env, client, {
+                transactions: [
+                    {
+                        amount: { total: orderTotalPriceService, currency: 'PLN' }
+                    }
+                ]
+            });
+        },
+        commit: true, // Optional: show a 'Pay Now' button in the checkout flow
+        onAuthorize: function(data, actions) {
+
+            return actions.payment.execute().then(function() {
+                $location.path('/paymentAuthorized')
+            });
+        }
+    };
+
+    $scope.backToCart = function () {
+        pizzeriaUrlService.pizzeriaUrl = $scope.url;
+        $location.path('/cart');
+
+    }
+}]);
 
 
 

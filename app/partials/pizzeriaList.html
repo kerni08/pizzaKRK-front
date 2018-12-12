@@ -1,6 +1,5 @@
-
 <body class="container">
-<div controller = "PizzeriaListController">
+<div controller="PizzeriaListController">
 
 
     <h1>Pizzerie dostarczajace dla kodu: {{zipCode}}</h1>
@@ -10,8 +9,8 @@
         <ul>
 
             <li ng-repeat="i in items">
-                <div class = "pizzeriaBox"  >
-                    <img ng-src="{{i.image}}" /></a>
+                <div class="pizzeriaBox">
+                    <img ng-src="{{i.image}}"/></a>
                     <p>{{i.title}}</p>
                     <p>Ocena: {{i.score}}</p>
                     <p><i>{{i.description}}</i></p>
@@ -20,6 +19,6 @@
             </li>
         </ul>
     </div>
-    </div>
+</div>
 </div>
 </body>
