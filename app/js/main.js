@@ -192,7 +192,6 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
 
 app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
     $scope.url = pizzeriaUrlService.url;
-    console.log(orderTotalPriceService.total);
     $scope.opts = {
         env: 'sandbox',
         client: {
