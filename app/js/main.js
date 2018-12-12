@@ -41,11 +41,9 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
 });
 
 app.service('zipCodeService', function () {
-    var zipCode = '';
     return zipCode;
 });
 app.service('pizzeriaUrlService', function () {
-    var pizzeriaUrl = '';
     return pizzeriaUrl;
 });
 app.service('cartService', function () {
@@ -53,7 +51,6 @@ app.service('cartService', function () {
 });
 
 app.service('orderTotalPriceService', function () {
-    var total = 0.00;
     return total;
 });
 
