@@ -163,7 +163,6 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
         var total = _.reduce($scope.cart, function (sum, item) {
             return sum + $scope.getCost(item);
         }, 0);
-        console.log('total: ' + total);
         return total;
     };
 
@@ -180,7 +179,6 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
     $scope.removeFromCart = function (item) {
         var index = $scope.cart.indexOf(item);
         $scope.cart.splice(index, 1);
-        console.log($scope.cart);
     };
 
     $scope.clearCart = function () {
@@ -225,7 +223,6 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
             $scope.paypalButtonVisible = false;
             $location.path('/order/success');
             return actions.payment.execute().then(function () {
-
             });
         }
     };
