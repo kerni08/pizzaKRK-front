@@ -11,8 +11,8 @@
             <li ng-repeat="i in items">
                 <div class="pizzeriaBox">
                     <img ng-src="{{i.image}}"/></a>
-                    <p>{{i.title}}</p>
-                    <p>Ocena: {{i.score}}</p>
+                    <p>{{i.name}}</p>
+                    <p>Ocena: {{i.rating}}</p>
                     <p><i>{{i.description}}</i></p>
                     <button class="btn" ng-click="redirect(i.url)">Menu</button>
                 </div>

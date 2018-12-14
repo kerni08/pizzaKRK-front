@@ -13,7 +13,8 @@
             <button class="btn" ng-click="decrease(i)">-</button>
             {{i.quantity}}
             <button class="btn" ng-click="increase(i)">+</button>
-            <button class="btn" ng-click="addToCart(i.id, i.name, i.price, i.quantity)">Dodaj do koszyka</button>
+            <button class="btn"  ng-disabled="i.button.disabled" ng-click="addToCart(i)">{{i.button.text}}</button>
+            <button class="btn"  ng-show="i.button.disabled" ng-click="removeFromCart(i)">Usuń z koszyka</button>
         </div>
     </li>
 </div>

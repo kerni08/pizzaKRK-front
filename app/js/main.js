@@ -23,7 +23,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "CartCtrl"})
         .when("/pizzeriaList", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
         .when("/order", {templateUrl: "/partials/order.html", controller: "OrderCtrl"})
-        .when("/paymentAuthorized", {templateUrl: "partials/authorized.html", controller: "PageCtrl"})
+        .when("/order/success", {templateUrl: "partials/authorized.html", controller: "authorizedCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -53,7 +53,7 @@ app.service('cartService', function () {
 });
 
 app.service('orderTotalPriceService', function () {
-    var total = '';
+    var total = 0;
     return total;
 });
 
@@ -77,24 +77,24 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', 'zipCodeService', 'pi
         {
             image: 'https://cdn0.iconfinder.com/data/icons/restaurant-53/64/Food-junk-pizza-fast_food-512.png',
             kod: '30-069',
-            title: 'PizzaChatka',
-            score: '4.0',
+            name: 'PizzaChatka',
+            rating: '4.0',
             description: 'Amerykańska',
             url: 'pizzachatka'
         },
         {
             image: 'https://image.flaticon.com/icons/svg/99/99954.svg',
             kod: '30-420',
-            title: 'UpalonaPizza',
-            score: '4.0',
+            name: 'UpalonaPizza',
+            rating: '4.0',
             desc: 'Jamajska',
             url: 'upalonapizza'
         },
         {
             image: 'https://cdn1.iconfinder.com/data/icons/universal-mobile-line-icons-vol-9/48/432-512.png',
             kod: '30-069',
-            title: 'SpalonaPizzaDotCom',
-            score: '4.0',
+            name: 'SpalonaPizzaDotCom',
+            rating: '4.0',
             description: 'Polska',
             url: 'spalonapizzzadotcom'
         }
@@ -109,28 +109,38 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', 'zipCodeService', 'pi
 app.controller('PizzeriaCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', function ($scope, cartService, pizzeriaUrlService) {
     $scope.url = pizzeriaUrlService.pizzeriaUrl;
     $scope.items = [
-        {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00, quantity: 0},
-        {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00, quantity: 0},
-        {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00, quantity: 0}
+        {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00, quantity: 1, button: {disabled: false, text: 'Dodaj do koszyka'}},
+        {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}},
+        {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}}
     ];
+
     $scope.setup = {
-        min: 0,
+        min: 1,
         max: 10
     };
 
 
-    $scope.increase = function (i) {
-        if (i.quantity < $scope.setup.max)
-            i.quantity++;
+    $scope.increase = function (item) {
+        if (item.quantity < $scope.setup.max)
+            item.quantity++;
     };
 
-    $scope.decrease = function (i) {
-        if (i.quantity > $scope.setup.min)
-            i.quantity--;
+    $scope.decrease = function (item) {
+        if (item.quantity > $scope.setup.min)
+            item.quantity--;
     };
 
-    $scope.addToCart = function (pid, pname, pprice, qty) {
-        cartService.cart.push({id: pid, name: pname, price: pprice, quantity: qty});
+    $scope.removeFromCart = function (item) {
+        item.button.disabled = false;
+        item.button.text = 'Dodaj do koszyka!';
+        var index = cartService.cart.indexOf(item);
+        cartService.cart.splice(index, 1);
+    };
+
+    $scope.addToCart = function (item) {
+        item.button.disabled = true;
+        item.button.text = 'Dodano!';
+        cartService.cart.push(item);
     };
 
 
@@ -157,14 +167,14 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
         return total;
     };
 
-    $scope.increase = function (i) {
-        if (i.quantity < $scope.setup.max)
-            i.quantity++;
+    $scope.increase = function (item) {
+        if (item.quantity < $scope.setup.max)
+            item.quantity++;
     };
 
-    $scope.decrease = function (i) {
-        if (i.quantity > $scope.setup.min)
-            i.quantity--;
+    $scope.decrease = function (item) {
+        if (item.quantity > $scope.setup.min)
+            item.quantity--;
     };
 
     $scope.removeFromCart = function (item) {
@@ -192,6 +202,7 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
 
 app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
     $scope.url = pizzeriaUrlService.url;
+    $scope.paypalButtonVisible = true;
     $scope.opts = {
         env: 'sandbox',
         client: {
@@ -211,9 +222,10 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
         },
         commit: true, // Optional: show a 'Pay Now' button in the checkout flow
         onAuthorize: function (data, actions) {
-            // Optional: display a confirmation page here
+            $scope.paypalButtonVisible = false;
+            $location.path('/order/success');
             return actions.payment.execute().then(function () {
-                console.log('Success!');
+
             });
         }
     };

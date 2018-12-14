@@ -11,6 +11,6 @@
     </li>
     {{getTotal() | currency:''}} zł
     <button class="btn" ng-click="clearCart()">Wyczyść koszyk</button>
-    <button class="btn" ng-click="backToPizzeriaPage()">Wróc na stronę pizzeri</button>
-    <button class="btn" ng-click="sendOrder()">Dalej</button>
+    <button class="btn" ng-show="url != undefined" ng-click="backToPizzeriaPage()">Wróc na stronę pizzeri</button>
+    <button class="btn" ng-show="getTotal() != 0" ng-click="sendOrder()">Dalej</button>
 </div>
