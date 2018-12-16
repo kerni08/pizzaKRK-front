@@ -1,8 +1,8 @@
 {
-  "name": "pizzaPortal-front",
+  "name": "pizzaKrakow-front",
   "private": true,
   "version": "0.0.0",
-  "description": "Frontend for PizzaPortal",
+  "description": "Frontend for Pizza Krakow application",
   "repository": "https://github.com/heartistizio/pizzaKRK-front",
   "license": "MIT",
   "dependencies": {

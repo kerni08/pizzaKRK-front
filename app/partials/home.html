@@ -1,11 +1,13 @@
-<div class="section-colored text-center">
+<div class="section-colored text-center" ng-controller="ZipCodeController">
 
-    <div class="bar">
-        <form ng-submit=submit() ng-controller="zipCodeController">
-            <p><b>Wpisz kod pocztowy np. 30-069</b></p>
-            <input type="text" ng-model="text" name="text"/>
+
+    <div class="searchBar">
+        <p>{{message}}</p>
+        <form ng-submit=submit()>
+            <input type="text" ng-model="text" name="text" placeholder="Wpisz kod pocztowy"/>
         </form>
     </div>
+
 
     <!-- /.container -->
 </div>

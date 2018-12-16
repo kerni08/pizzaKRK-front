@@ -1,0 +1,14 @@
+<body class="container">
+<div class="section-colored text-center" ng-controller="OrderInfoCtrl">
+    <p> Zmień status zamówienia[submitted, accepted, delivery, delivered](Dominik daj mnie ty ten bekend)</p>
+    <form ng-submit="submit()"><input type="text" ng-model="text" ng-name="text"/></form>
+    <h1><p>{{info}}</p></h1>
+    <div ng-show="opinion">
+        <form class="opinionForm" name="opinionForm">
+            <div star-rating rating-value="rating" max="5" on-rating-selected="getSelectedRating(rating) "></div>
+            <textarea ng-model="comment"/><br/>
+            <button class="btn" ng-click="submitOpinion()">Wyślij</button>
+         </form>
+    </div>
+</div>
+</body>

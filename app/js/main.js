@@ -23,7 +23,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/cart", {templateUrl: "/partials/cart.html", controller: "CartCtrl"})
         .when("/pizzeriaList", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
         .when("/order", {templateUrl: "/partials/order.html", controller: "OrderCtrl"})
-        .when("/order/success", {templateUrl: "partials/authorized.html", controller: "authorizedCtrl"})
+        .when("/order/success", {templateUrl: "partials/orderInfo.html", controller: "OrderInfoCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -58,15 +58,68 @@ app.service('orderTotalPriceService', function () {
 });
 
 
-app.controller('zipCodeController', ['$scope', '$location', 'zipCodeService', function ($scope, $location, zipCodeService) {
+app.constant("zipPattern", {
+    zip: /30-\d{3}/,
+    zipNotInKrakow: /\d{2}-\d{3}/
+});
+
+app.directive('starRating', function () {
+    return {
+        restrict: 'A',
+        template: '<ul class="rating">' +
+        '<li ng-repeat="star in stars" ng-class="star" ng-click="toggle($index)">' +
+        '\u2605' +
+        '</li>' +
+        '</ul>',
+        scope: {
+            ratingValue: '=',
+            max: '=',
+            onRatingSelected: '&'
+        },
+        link: function (scope, elem, attrs) {
+
+            var updateStars = function () {
+                scope.stars = [];
+                for (var i = 0; i < scope.max; i++) {
+                    scope.stars.push({
+                        filled: i < scope.ratingValue - 0.99
+                    });
+                }
+            };
+
+            scope.toggle = function (index) {
+                scope.ratingValue = index + 1;
+                scope.onRatingSelected({
+                    rating: index + 1
+                });
+            };
+
+            scope.$watch('ratingValue', function (oldVal, newVal) {
+                if (newVal) {
+                    updateStars();
+                }
+            });
+        }
+    };
+});
+
+
+app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'zipPattern', function ($scope, $location, zipCodeService, zipPattern) {
     $scope.text = '';
+    $scope.message = 'Wyszukaj pizzerie w Twojej okolicy!';
     $scope.submit = function () {
 
-        if ($scope.text) {
+        if ($scope.text.match(zipPattern.zip)) {
             zipCodeService.zipCode = this.text;
             $scope.text = '';
+            $location.path('/pizzeriaList');
         }
-        $location.path('/pizzeriaList');
+        if ($scope.text.match(zipPattern.zipNotInKrakow)) {
+            $scope.message = "Niestety, obsługujemy tylko Kraków.";
+        }
+        else{
+            $scope.message = "Wpisz poprawny kod pocztowy!";
+        }
     }
 
 }]);
@@ -75,44 +128,46 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', 'zipCodeService', 'pi
     $scope.zipCode = zipCodeService.zipCode;
     $scope.items = [
         {
-            image: 'https://cdn0.iconfinder.com/data/icons/restaurant-53/64/Food-junk-pizza-fast_food-512.png',
+            id: 1,
+            image: './resources/templatePizzeriaIcon.png',
             kod: '30-069',
             name: 'PizzaChatka',
-            rating: '4.0',
-            description: 'Amerykańska',
-            url: 'pizzachatka'
+            rating: '3.99',
+            description: 'Amerykańska'
         },
         {
-            image: 'https://image.flaticon.com/icons/svg/99/99954.svg',
+            id: 2,
+            image: './resources/templatePizzeriaIcon.png',
             kod: '30-420',
             name: 'UpalonaPizza',
             rating: '4.0',
-            desc: 'Jamajska',
-            url: 'upalonapizza'
+            description: 'Jamajska'
         },
         {
-            image: 'https://cdn1.iconfinder.com/data/icons/universal-mobile-line-icons-vol-9/48/432-512.png',
+            id: 3,
+            image: './resources/templatePizzeriaIcon.png',
             kod: '30-069',
             name: 'SpalonaPizzaDotCom',
-            rating: '4.0',
-            description: 'Polska',
-            url: 'spalonapizzzadotcom'
+            rating: '2.47',
+            description: 'Polska'
         }
     ];
-    $scope.redirect = function (url) {
-        pizzeriaUrlService.pizzeriaUrl = url;
-        $location.path('/p/' + url);
+    $scope.redirect = function (id) {
+        pizzeriaUrlService.pizzeriaUrl = id;
+        $location.path('/p/' + id);
     }
 
 }]);
 
-app.controller('PizzeriaCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', function ($scope, cartService, pizzeriaUrlService) {
+app.controller('PizzeriaCtrl', ['$scope', '$http', 'cartService', 'pizzeriaUrlService', function ($scope, $http, cartService, pizzeriaUrlService) {
     $scope.url = pizzeriaUrlService.pizzeriaUrl;
+
     $scope.items = [
         {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00, quantity: 1, button: {disabled: false, text: 'Dodaj do koszyka'}},
         {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}},
         {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}}
     ];
+
 
     $scope.setup = {
         min: 1,
@@ -139,7 +194,7 @@ app.controller('PizzeriaCtrl', ['$scope', 'cartService', 'pizzeriaUrlService', f
 
     $scope.addToCart = function (item) {
         item.button.disabled = true;
-        item.button.text = 'Dodano!';
+        item.button.text = 'Dodano do koszyka!';
         cartService.cart.push(item);
     };
 
@@ -200,7 +255,8 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
 
 app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
     $scope.url = pizzeriaUrlService.url;
-    $scope.paypalButtonVisible = true;
+    $scope.formSubmitted = false;
+    $scope.submitButtonVisible = true;
     $scope.opts = {
         env: 'sandbox',
         client: {
@@ -220,13 +276,23 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
         },
         commit: true, // Optional: show a 'Pay Now' button in the checkout flow
         onAuthorize: function (data, actions) {
-            $scope.paypalButtonVisible = false;
+            $scope.formSubmitted = false;
             $location.path('/order/success');
+            //POST user
             return actions.payment.execute().then(function () {
             });
         }
     };
 
+    $scope.submit = function (){
+        $scope.formSubmitted = true;
+        $scope.submitButtonVisible = false;
+    };
+
+    $scope.edit = function() {
+        $scope.formSubmitted = false;
+        $scope.submitButtonVisible = true;
+    };
     $scope.backToCart = function () {
         pizzeriaUrlService.pizzeriaUrl = $scope.url;
         $location.path('/cart');
@@ -234,5 +300,50 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
     }
 }]);
 
+app.controller('OrderInfoCtrl', ['$scope', function ($scope) {
+    $scope.info = "Twoje zamówienie zostało złożone.";
+    $scope.status = "delivered"; // http get to get order status
+    $scope.opinion = false;
+    $scope.rating = 1;
+    $scope.comment = '';
 
+
+
+    if($scope.status == "submitted")
+        $scope.info = "Twoje zamówienie zostało złożone.";
+    if($scope.status == "accepted")
+        $scope.info = "Twoje zamówienie zostało zaakceptowane.";
+    if($scope.status == "delivery")
+        $scope.info = "Twoje zamówienie jest w trakcie dostawy.";
+    if($scope.status == "delivered") {
+        $scope.info = "Twoje zamówienie zostało dostarczone! Podziel sie swoją opinią poniżej.";
+        $scope.opinion = true;
+    }
+
+    $scope.submit = function(){
+        $scope.status = this.text;
+        $scope.$apply
+        console.log($scope.status);
+        if($scope.status == 'submitted')
+            $scope.info = "Twoje zamówienie zostało złożone.";
+        if($scope.status == "accepted")
+            $scope.info = "Twoje zamówienie zostało zaakceptowane.";
+        if($scope.status == 'delivery')
+            $scope.info = "Twoje zamówienie jest w trakcie dostawy.";
+        if($scope.status == 'delivered') {
+            $scope.info = "Twoje zamówienie zostało dostarczone! Podziel sie swoją opinią poniżej.";
+            $scope.opinion = true;
+        }
+    };
+
+    $scope.getSelectedRating = function (rating) {
+        $scope.rating = rating;
+    };
+
+    $scope.submitOpinion = function(){
+        console.log("POST TO BACKEND rating:" + $scope.rating + " comment: " + $scope.comment);
+    };
+
+
+}]);
 

@@ -1,14 +1,22 @@
-<div ng-controller="OrderCtrl">
-    <form novalidate class="orderForm">
-        <label>Imię i nazwisko: <input type="text" ng-model="user.name"/></label><br/>
-        <label>Adres: <input type="text" ng-model="user.adress"/></label><br/>
-        <label>Numer telefonu: <input type="text" ng-model="user.phoneNumber"/></label><br/>
-        <label>E-mail: <input type="email" ng-model="user.email"/></label><br/>
-        <label>Komentarz: <textarea ng-model="user.comment"/></label><br/>
-        <input type="submit" ng-click="addOrder(user)" value="Save"/>
+<body class="container">
+<div class="section-colored text-center" ng-controller="OrderCtrl">
+
+    <form class=" orderForm" name="orderForm">
+        <input type="text" ng-model="user.name" ng-disabled="formSubmitted" ng-required="true" placeholder="Imię i nazwisko"/><br/>
+        <input type="text" ng-model="user.adress" ng-disabled="formSubmitted" ng-required="true" placeholder="Adres"/><br/>
+        <input type="text" ng-model="user.phoneNumber" ng-disabled="formSubmitted" ng-required="true" placeholder="Numer telefonu"/><br/>
+        <input type="email" ng-model="user.email" ng-disabled="formSubmitted" ng-required="true" placeholder="E-mail"/><br/>
+        <textarea ng-model="user.comment" ng-disabled="formSubmitted" placeholder="Komentarz"/><br/>
+
     </form>
 
+    <button ng-show="submitButtonVisible" ng-disabled="orderForm.$invalid" class="btn" ng-click="submit()">Złóż zamówienie</button>
+    <button ng-show="formSubmitted" class="btn" ng-click="edit()">Edytuj dane zamówienia</button>
 
-    <div ng-if="paypalButtonVisible"><paypal-button env="opts.env" client="opts.client" payment="opts.payment" commit="opts.commit"
-                   on-authorize="opts.onAuthorize"></paypal-button></div>
+    <div ng-show="formSubmitted">
+        <paypal-button env="opts.env" client="opts.client" payment="opts.payment" commit="opts.commit"
+                       on-authorize="opts.onAuthorize"></paypal-button>
+    </div>
+
 </div>
+</body>

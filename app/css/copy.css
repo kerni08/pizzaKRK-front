@@ -1,0 +1,260 @@
+
+
+html, body {
+    height: 100%;
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+.dropdown {
+    cursor:pointer;
+}
+
+.navbar-inverse{
+
+}
+
+.navbar-inverse {
+    background-color: #992e1c;
+    border-color: #892919;
+    background-image: -webkit-linear-gradient(top, #992e1c 0, #892919 100%);
+    background-image: -o-linear-gradient(top, #992e1c 0, #892919 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#992e1c), to(#892919));
+    background-image: linear-gradient(to bottom, #992e1c 0, #892919 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#992e1c', endColorstr='#892919', GradientType=0);
+}
+
+.navbar-inverse .navbar-brand {
+    color: #f8f8f8;
+}
+
+.navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus {
+    color: #f8f8f8;
+    background-color: transparent
+}
+
+.navbar-inverse .navbar-text {
+    color: #f8f8f8;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #f8f8f8;
+}
+
+.btn {
+    background: #992e1c;
+}
+.btn-menu {
+    background: #000;
+    float: right;
+}
+
+.tab-pane {
+    margin-top: 15px;
+}
+
+/* Page Sections */
+.section,
+.section-colored {
+    padding: 50px 0;
+}
+
+.section-colored {
+    background-color: #ffffff;
+    /* change this to change the background color of a colored section */
+}
+
+.sidebar {
+    margin-top: 40px;
+}
+
+.sidebar ul {
+    border-radius: 5px;
+    padding: 5px;
+    border: 1px solid #cccccc;
+}
+
+ul li img{
+    width: 80px;
+    height: 80px;
+    float: left;
+    border: none;
+}
+
+ul li text{
+
+}
+
+.pizzeriaBox{
+    color: #ffffff;
+    background-color: #ffffff;
+
+    background-image:-webkit-linear-gradient(top, #992e1c, #892919);
+    background-image:-moz-linear-gradient(top, #992e1c  , #892919);
+    background-image:linear-gradient(top, #992e1c, #892919);
+
+    box-shadow: 0 1px 1px #52180f;
+    border-radius: 2px;
+    width: 400px;
+    padding: 14px;
+    margin: 80px auto 20px;
+    position: relative;
+
+
+}
+
+.menuBox{
+    color: #ffffff;
+    background-color: #ffffff;
+
+    background-image:-webkit-linear-gradient(top, #992e1c, #892919);
+    background-image:-moz-linear-gradient(top, #992e1c  , #892919);
+    background-image:linear-gradient(top, #992e1c, #892919);
+
+    box-shadow: 0 1px 1px #52180f;
+    border-radius: 2px;
+    width: 400px;
+    padding: 14px;
+    margin: 80px auto 20px;
+    position: relative;
+
+
+}
+
+
+.table {
+    width: 600px;
+}
+
+.on-sale {
+    color: red;
+}
+
+.qty {
+    width: 60px;
+}
+
+.animate-repeat2 {
+    line-height:40px;
+    list-style:none;
+    box-sizing:border-box;
+}
+
+.animate-repeat2.ng-move,
+.animate-repeat2.ng-enter,
+.animate-repeat2.ng-leave {
+    -webkit-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+}
+
+.animate-repeat2.ng-leave.ng-leave-active,
+.animate-repeat2.ng-move,
+.animate-repeat2.ng-enter {
+    opacity:0;
+    max-height:0;
+}
+
+.animate-repeat2.ng-leave,
+.animate-repeat2.ng-move.ng-move-active,
+.animate-repeat2.ng-enter.ng-enter-active {
+    opacity:1;
+    max-height:40px;
+}
+
+.bar{
+    background-color: #992e1c;
+
+    background-image:-webkit-linear-gradient(top, #992elc, #892919);
+    background-image:-moz-linear-gradient(top, #992e1c, #892919);
+    background-image:linear-gradient(top, #992e1c, #892919);
+
+    box-shadow: 0 1px 1px #52180f;
+    border-radius: 2px;
+    width: 400px;
+    padding: 14px;
+    margin: 80px auto 20px;
+    position:relative;
+}
+
+.bar input{
+    background:#fff no-repeat 13px 13px;
+
+    border: none;
+    width: 100%;
+    line-height: 19px;
+    padding: 11px 0;
+
+    border-radius: 2px;
+    box-shadow: 0 2px 8px #c4c4c4 inset;
+    text-align: left;
+    font-size: 14px;
+    font-family: inherit;
+    color: #738289;
+    font-weight: bold;
+    outline: none;
+    text-indent: 40px;
+}
+
+
+.fill {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+
+/* Social Icons Styles */
+.list-social-icons {
+    margin-bottom: 45px;
+}
+
+.tooltip-social a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.facebook-link a:hover {
+    color: #3b5998;
+}
+
+.linkedin-link a:hover {
+    color: #007fb1;
+}
+
+.twitter-link a:hover {
+    color: #39a9e0;
+}
+
+.google-plus-link a:hover {
+    color: #d14836;
+}
+
+/* Service Page Styles */
+.service-icon {
+    font-size: 50px;
+}
+
+/* 404 Page Styles */
+.error-404 {
+    font-size: 8em;
+}
+
+
+/* Footer Styles */
+footer {
+    position:absolute;
+    bottom: 0;
+    margin: 50px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+
+    .carousel {
+        height: 70%;
+        /* increases the carousel height so it looks good on phones */
+    }
+}
