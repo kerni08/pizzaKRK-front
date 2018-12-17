@@ -127,7 +127,7 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeServ
     var url = 'http://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'';
     $scope.items = [];
     console.log(url);
-    $http.get('http://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'').then(function(response) {
+    $http.get('https://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'').then(function(response) {
         $scope.items = response.data.queries.request.totalResults;
         console.log("gowno" + $scope.items);
         if($scope.items == []){
