@@ -24,6 +24,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/pizzeriaList", {templateUrl: "/partials/pizzeriaList.html", controller: "PizzeriaListCtrl"})
         .when("/order", {templateUrl: "/partials/order.html", controller: "OrderCtrl"})
         .when("/order/success", {templateUrl: "partials/orderInfo.html", controller: "OrderInfoCtrl"})
+        .when("/notFound/", {templateUrl: "partials/pizzeriaNotFound.html", controller: "PageCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
 
 }]);
@@ -109,14 +110,12 @@ app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'z
     $scope.message = 'Wyszukaj pizzerie w Twojej okolicy!';
     $scope.submit = function () {
 
-        if ($scope.text.match(zipPattern.zip)) {
+        if ($scope.text) {
             zipCodeService.zipCode = this.text;
             $scope.text = '';
             $location.path('/pizzeriaList');
         }
-        if ($scope.text.match(zipPattern.zipNotInKrakow)) {
-            $scope.message = "Niestety, obsługujemy tylko Kraków.";
-        }
+
         else{
             $scope.message = "Wpisz poprawny kod pocztowy!";
         }
@@ -124,38 +123,21 @@ app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'z
 
 }]);
 
-app.controller('PizzeriaListCtrl', ['$scope', '$location', 'zipCodeService', 'pizzeriaUrlService', function ($scope, $location, zipCodeService, pizzeriaUrlService) {
-    $scope.zipCode = zipCodeService.zipCode;
-    $scope.items = [
-        {
-            id: 1,
-            image: './resources/templatePizzeriaIcon.png',
-            kod: '30-069',
-            name: 'PizzaChatka',
-            rating: '3.99',
-            description: 'Amerykańska'
-        },
-        {
-            id: 2,
-            image: './resources/templatePizzeriaIcon.png',
-            kod: '30-420',
-            name: 'UpalonaPizza',
-            rating: '4.0',
-            description: 'Jamajska'
-        },
-        {
-            id: 3,
-            image: './resources/templatePizzeriaIcon.png',
-            kod: '30-069',
-            name: 'SpalonaPizzaDotCom',
-            rating: '2.47',
-            description: 'Polska'
+app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeService', 'pizzeriaUrlService', function ($scope, $location, $http, zipCodeService, pizzeriaUrlService) {
+    var url = 'http://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'';
+    $scope.items = [];
+    console.log(url);
+    $http.get('http://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'').then(function(response) {
+        $scope.items = response.data.queries.request.totalResults;
+        console.log("gowno" + $scope.items);
+        if($scope.items == []){
+            $location.path('notFound');
         }
-    ];
+    });
     $scope.redirect = function (id) {
         pizzeriaUrlService.pizzeriaUrl = id;
         $location.path('/p/' + id);
-    }
+    };
 
 }]);
 
