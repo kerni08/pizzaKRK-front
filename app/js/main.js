@@ -124,13 +124,13 @@ app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'z
 }]);
 
 app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeService', 'pizzeriaUrlService', function ($scope, $location, $http, zipCodeService, pizzeriaUrlService) {
-    var url = 'http://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'';
     $scope.items = [];
-    console.log(url);
     $http.get('https://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'').then(function(response) {
-        $scope.items = response.data.queries.request.totalResults;
-        console.log("gowno" + $scope.items);
-        if($scope.items == []){
+        angular.forEach(response.data.results.results, function(value){
+            $scope.items.push({name: value.pizzerianame}); //
+        });
+        console.log("pizzerias:" + $scope.items);
+        if($scope.items == undefined || $scope.items.length == 0){
             $location.path('notFound');
         }
     });
@@ -144,11 +144,12 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeServ
 app.controller('PizzeriaCtrl', ['$scope', '$http', 'cartService', 'pizzeriaUrlService', function ($scope, $http, cartService, pizzeriaUrlService) {
     $scope.url = pizzeriaUrlService.pizzeriaUrl;
 
-    $scope.items = [
-        {id: 1, name: 'Pizza Margherita', data: 'mozarella, sos pomidorowy', price: 18.00, quantity: 1, button: {disabled: false, text: 'Dodaj do koszyka'}},
-        {id: 2, name: 'Pizza Pepperoni', data: 'mozarella, sos pomidorowy, pepperoni', price: 27.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}},
-        {id: 3, name: 'Pizza Caprriciossa', data: 'mozarella, sos pomidorowy, szynka', price: 25.00, quantity: 1,  button: {disabled: false, text: 'Dodaj do koszyka'}}
-    ];
+    $http.get('https://pizzakrk.herokuapp.com/pizza/\'' + $scope.url + '\'').then(function(response) {
+        console.log("a" + response);
+        console.log(response.data);
+        this.items = response.data;
+        console.log("menu:" + $scope.items);
+    });
 
 
     $scope.setup = {
