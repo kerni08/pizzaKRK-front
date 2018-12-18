@@ -10,7 +10,7 @@
 
     </form>
 
-    <button ng-show="submitButtonVisible" ng-disabled="orderForm.$invalid" class="btn" ng-click="submit()">Złóż zamówienie</button>
+    <button ng-show="submitButtonVisible" ng-disabled="orderForm.$invalid" class="btn" ng-click="submit(user)">Złóż zamówienie</button>
     <button ng-show="formSubmitted" class="btn" ng-click="edit()">Edytuj dane zamówienia</button>
 
     <div ng-show="formSubmitted">

@@ -1,15 +1,13 @@
 <body class="container">
 <div class="section-colored text-center" ng-controller="PizzeriaListCtrl">
 
-
     <div class="pizzeriaList">
 
         <li ng-repeat="i in items">
             <div class="pizzeriaBox" ng-click="redirect(i.id)">
                 <img ng-src="{{i.image}}"/>
                 <p><strong>{{i.name}}</strong></p>
-                <div star-rating rating-value="rating.current" max="rating.max" on-rating-selected="getSelectedRating(rating)"></div>
-            </span>
+                <div star-rating rating-value="i.rating" max="5"></div>
             <p>{{i.description}}</p>
 
     </div>

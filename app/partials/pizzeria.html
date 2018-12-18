@@ -1,10 +1,11 @@
 <body class="container">
 <div class="section-colored text-center" ng-controller="PizzeriaCtrl">
+    {{url}}
         <li ng-repeat="i in items">
             <div class="menuBox">
                 <p><strong>{{i.name}} </strong></p>
                 <p>{{i.data}}</p>
-                <p>{{i.price}}</p>
+                <p>{{i.quantity * i.price | currency:''}} zł</p>
 
                 <button class="btn" ng-click="decrease(i)">-</button>
                 {{i.quantity}}

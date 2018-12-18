@@ -46,7 +46,7 @@ app.service('zipCodeService', function () {
     return zipCode;
 });
 app.service('pizzeriaUrlService', function () {
-    var pizzeriaUrl =  '';
+    var pizzeriaUrl = '';
     return pizzeriaUrl;
 });
 app.service('cartService', function () {
@@ -58,6 +58,10 @@ app.service('orderTotalPriceService', function () {
     return total;
 });
 
+app.service('orderIDService', function () {
+    var id = 0;
+    return id;
+});
 
 app.constant("zipPattern", {
     zip: /30-\d{3}/,
@@ -116,7 +120,7 @@ app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'z
             $location.path('/pizzeriaList');
         }
 
-        else{
+        else {
             $scope.message = "Wpisz poprawny kod pocztowy!";
         }
     }
@@ -125,12 +129,16 @@ app.controller('ZipCodeController', ['$scope', '$location', 'zipCodeService', 'z
 
 app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeService', 'pizzeriaUrlService', function ($scope, $location, $http, zipCodeService, pizzeriaUrlService) {
     $scope.items = [];
-    $http.get('https://pizzakrk.herokuapp.com/pizzerias/\'' + zipCodeService.zipCode + '\'').then(function(response) {
-        angular.forEach(response.data.results.results, function(value){
-            $scope.items.push({name: value.pizzerianame}); //
+    $http.get('https://pizzakrk.herokuapp.com/pizzerias/' + zipCodeService.zipCode).then(function (response) {
+        angular.forEach(response.data.results.results, function (value) {
+            $scope.items.push({
+                name: value.pizzerianame,
+                id: value.pizzeriaid,
+                image: './resources/templatePizzeriaIcon.png',
+                rating: "3.0"
+            }); //
         });
-        console.log("pizzerias:" + $scope.items);
-        if($scope.items == undefined || $scope.items.length == 0){
+        if ($scope.items == undefined || $scope.items.length == 0) {
             $location.path('notFound');
         }
     });
@@ -143,12 +151,20 @@ app.controller('PizzeriaListCtrl', ['$scope', '$location', '$http', 'zipCodeServ
 
 app.controller('PizzeriaCtrl', ['$scope', '$http', 'cartService', 'pizzeriaUrlService', function ($scope, $http, cartService, pizzeriaUrlService) {
     $scope.url = pizzeriaUrlService.pizzeriaUrl;
-
-    $http.get('https://pizzakrk.herokuapp.com/pizza/\'' + $scope.url + '\'').then(function(response) {
-        console.log("a" + response);
-        console.log(response.data);
-        this.items = response.data;
-        console.log("menu:" + $scope.items);
+    $scope.items = [];
+    $http.get('https://pizzakrk.herokuapp.com/pizza/' + $scope.url).then(function (response) {
+        angular.forEach(response.data.results.results, function (value) {
+            $scope.items.push({
+                name: value.pizzaname,
+                price: value.pizzaprice,
+                data: 'składniki',
+                quantity: 1,
+                button: {disabled: false, text: 'Dodaj do koszyka'},
+                image: './resources/templatePizzeriaIcon.png',
+                rating: "3.0"
+            }); //
+            console.log(value.pizzeriaID);
+        });
     });
 
 
@@ -236,10 +252,11 @@ app.controller('CartCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlSe
     };
 }]);
 
-app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', function ($scope, $location, cartService, pizzeriaUrlService, orderTotalPriceService) {
+app.controller('OrderCtrl', ['$scope', '$location', '$http', 'cartService', 'pizzeriaUrlService', 'orderTotalPriceService', 'orderIDService', function ($scope, $location, $http, cartService, pizzeriaUrlService, orderTotalPriceService, orderIDService) {
     $scope.url = pizzeriaUrlService.url;
     $scope.formSubmitted = false;
     $scope.submitButtonVisible = true;
+    $scope.master = [];
     $scope.opts = {
         env: 'sandbox',
         client: {
@@ -260,19 +277,34 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
         commit: true, // Optional: show a 'Pay Now' button in the checkout flow
         onAuthorize: function (data, actions) {
             $scope.formSubmitted = false;
-            $location.path('/order/success');
-            //POST user
+
             return actions.payment.execute().then(function () {
+                $location.path('/order/success');
+                $http.post('https://pizzakrk.herokuapp.com/order/', {
+                    pid: pizzeriaUrlService.url,
+                    name: $scope.master.name,
+                    adress: $scope.master.adress,
+                    comment: (" " + $scope.master.comment),
+                    phone: $scope.master.phone,
+                    pizzas: cartService.cart,
+                    email: $scope.master.email
+                }).then(function (response) {
+                    console.log("rd " + response.data);
+                    orderIDService.id = response.data.results.results[0];
+                    console.log("id" + orderIDService.id);
+                });
+                console.log(orderIDService.id);
             });
         }
     };
 
-    $scope.submit = function (){
+    $scope.submit = function (user) {
         $scope.formSubmitted = true;
         $scope.submitButtonVisible = false;
+        $scope.master = angular.copy(user);
     };
 
-    $scope.edit = function() {
+    $scope.edit = function () {
         $scope.formSubmitted = false;
         $scope.submitButtonVisible = true;
     };
@@ -283,48 +315,59 @@ app.controller('OrderCtrl', ['$scope', '$location', 'cartService', 'pizzeriaUrlS
     }
 }]);
 
-app.controller('OrderInfoCtrl', ['$scope', function ($scope) {
+app.controller('OrderInfoCtrl', ['$scope', '$http', 'orderIDService', 'pizzeriaUrlService', function ($scope, $http, orderIDService, pizzeriaUrlService) {
     $scope.info = "Twoje zamówienie zostało złożone.";
-    $scope.status = "delivered"; // http get to get order status
+    $http.get('https://pizzakrk.herokuapp.com/pizzaorderStatus/' + orderIDService.id).then(function (response) {
+        $scope.status = response.data.results.results[0].pizzaorderstatus;
+    });
+
     $scope.opinion = false;
     $scope.rating = 1;
     $scope.comment = '';
 
 
-
-    if($scope.status == "submitted")
-        $scope.info = "Twoje zamówienie zostało złożone.";
-    if($scope.status == "accepted")
-        $scope.info = "Twoje zamówienie zostało zaakceptowane.";
-    if($scope.status == "delivery")
-        $scope.info = "Twoje zamówienie jest w trakcie dostawy.";
-    if($scope.status == "delivered") {
-        $scope.info = "Twoje zamówienie zostało dostarczone! Podziel sie swoją opinią poniżej.";
-        $scope.opinion = true;
-    }
-
-    $scope.submit = function(){
-        $scope.status = this.text;
-        $scope.$apply
-        console.log($scope.status);
-        if($scope.status == 'submitted')
+    /*
+        if($scope.status == "submitted")
             $scope.info = "Twoje zamówienie zostało złożone.";
         if($scope.status == "accepted")
             $scope.info = "Twoje zamówienie zostało zaakceptowane.";
-        if($scope.status == 'delivery')
+        if($scope.status == "delivery")
             $scope.info = "Twoje zamówienie jest w trakcie dostawy.";
-        if($scope.status == 'delivered') {
+        if($scope.status == "delivered") {
             $scope.info = "Twoje zamówienie zostało dostarczone! Podziel sie swoją opinią poniżej.";
             $scope.opinion = true;
         }
-    };
 
-    $scope.getSelectedRating = function (rating) {
-        $scope.rating = rating;
-    };
+        $scope.submit = function(){
+            $scope.status = this.text;
+            $scope.$apply
+            console.log($scope.status);
+            if($scope.status == 'submitted')
+                $scope.info = "Twoje zamówienie zostało złożone.";
+            if($scope.status == "accepted")
+                $scope.info = "Twoje zamówienie zostało zaakceptowane.";
+            if($scope.status == 'delivery')
+                $scope.info = "Twoje zamówienie jest w trakcie dostawy.";
+            if($scope.status == 'delivered') {
+                $scope.info = "Twoje zamówienie zostało dostarczone! Podziel sie swoją opinią poniżej.";
+                $scope.opinion = true;
+            }
+        };
 
-    $scope.submitOpinion = function(){
+        $scope.getSelectedRating = function (rating) {
+            $scope.rating = rating;
+        };
+    */
+    $scope.submitOpinion = function () {
         console.log("POST TO BACKEND rating:" + $scope.rating + " comment: " + $scope.comment);
+
+        $http.post('https://pizzakrk.herokuapp.com/order/', {
+            pid: pizzeriaUrlService.url,
+            comment: $scope.comment,
+            rating: $scope.rating
+        }).then(function (response) {
+            orderIDService.id = response.data;
+        });
     };
 
 
