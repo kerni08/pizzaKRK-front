@@ -298,7 +298,7 @@ app.controller('OrderCtrl', ['$scope', '$location', '$http', 'cartService', 'piz
                     total: orderTotalPriceService.total,
                 }).then(function (response) {
                     console.log("rd " + response.data);
-                    orderIDService.id = response.data.results[0];
+                    orderIDService.id = response.data;
                     console.log("id" + orderIDService.id);
                 });
                 console.log(orderIDService.id);
